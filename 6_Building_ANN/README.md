@@ -13,7 +13,11 @@ An **Artificial Neural Network (ANN)** is a computational model inspired by the 
 - **Output Layer** — produces final predictions (class scores)
 
 Each layer applies:
-$$z = X \cdot W + b$$
+
+$$
+z = X \cdot W + b
+$$
+
 followed by a non-linear **activation function** (like ReLU) to allow the network to learn complex patterns.
 
 ---
@@ -22,26 +26,26 @@ followed by a non-linear **activation function** (like ReLU) to allow the networ
 
 The `fmnist_small.csv` file contains a subset of the [Fashion MNIST](https://github.com/zalandoresearch/fashion-mnist) dataset.
 
-| Property | Value |
-|---|---|
-| Image size | 28 × 28 pixels (784 features) |
-| Classes | 10 clothing categories |
-| Format | CSV — first column is label, remaining 784 columns are pixel values |
+| Property   | Value                                                                |
+| ---------- | -------------------------------------------------------------------- |
+| Image size | 28 × 28 pixels (784 features)                                       |
+| Classes    | 10 clothing categories                                               |
+| Format     | CSV — first column is label, remaining 784 columns are pixel values |
 
 ### The 10 Classes
 
-| Label | Item |
-|---|---|
-| 0 | T-shirt/top |
-| 1 | Trouser |
-| 2 | Pullover |
-| 3 | Dress |
-| 4 | Coat |
-| 5 | Sandal |
-| 6 | Shirt |
-| 7 | Sneaker |
-| 8 | Bag |
-| 9 | Ankle boot |
+| Label | Item        |
+| ----- | ----------- |
+| 0     | T-shirt/top |
+| 1     | Trouser     |
+| 2     | Pullover    |
+| 3     | Dress       |
+| 4     | Coat        |
+| 5     | Sandal      |
+| 6     | Shirt       |
+| 7     | Sneaker     |
+| 8     | Bag         |
+| 9     | Ankle boot  |
 
 ---
 
@@ -84,6 +88,7 @@ import matplotlib.pyplot as plt
 ```
 
 All the core libraries are imported:
+
 - `pandas` — for loading and inspecting the CSV data
 - `sklearn` — for splitting data into train/test sets
 - `torch` — the core PyTorch tensor library
@@ -112,6 +117,7 @@ df.head()
 ```
 
 The CSV is loaded into a Pandas DataFrame. Each row is one image:
+
 - Column `0` → class label (0–9)
 - Columns `1` to `784` → pixel intensity values (0–255)
 
@@ -180,11 +186,11 @@ class CustomDataset(Dataset):
 
 A custom class that wraps the NumPy arrays in PyTorch tensors.
 
-| Method | Purpose |
-|---|---|
-| `__init__` | Converts NumPy arrays to tensors. Features use `float32`, labels use `long` (required by `CrossEntropyLoss`) |
-| `__len__` | Returns the number of samples so PyTorch knows the dataset size |
-| `__getitem__` | Returns a single (feature, label) pair at index `idx` — used by DataLoader internally |
+| Method          | Purpose                                                                                                           |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `__init__`    | Converts NumPy arrays to tensors. Features use`float32`, labels use `long` (required by `CrossEntropyLoss`) |
+| `__len__`     | Returns the number of samples so PyTorch knows the dataset size                                                   |
+| `__getitem__` | Returns a single (feature, label) pair at index`idx` — used by DataLoader internally                           |
 
 ---
 
@@ -195,11 +201,11 @@ train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader  = DataLoader(test_dataset,  batch_size=32, shuffle=False)
 ```
 
-| Parameter | Value | Reason |
-|---|---|---|
-| `batch_size` | 32 | Process 32 images at a time — memory efficient |
-| `shuffle=True` | training only | Randomize order each epoch to prevent the model memorizing sequence patterns |
-| `shuffle=False` | test only | Order doesn't matter for evaluation |
+| Parameter         | Value         | Reason                                                                       |
+| ----------------- | ------------- | ---------------------------------------------------------------------------- |
+| `batch_size`    | 32            | Process 32 images at a time — memory efficient                              |
+| `shuffle=True`  | training only | Randomize order each epoch to prevent the model memorizing sequence patterns |
+| `shuffle=False` | test only     | Order doesn't matter for evaluation                                          |
 
 Each iteration over a loader yields a batch of shape `(32, 784)` for features and `(32,)` for labels.
 
@@ -244,18 +250,21 @@ Output (10 class scores / logits)
 
 #### Layer Breakdown
 
-| Layer | Input Size | Output Size | Purpose |
-|---|---|---|---|
-| `nn.Linear(784, 128)` | 784 | 128 | First hidden layer, reduces dimensionality |
-| `nn.ReLU()` | — | — | Adds non-linearity, removes negative activations |
-| `nn.Linear(128, 64)` | 128 | 64 | Second hidden layer, further abstraction |
-| `nn.ReLU()` | — | — | Adds non-linearity again |
-| `nn.Linear(64, 10)` | 64 | 10 | Output layer, one score per class |
+| Layer                   | Input Size | Output Size | Purpose                                          |
+| ----------------------- | ---------- | ----------- | ------------------------------------------------ |
+| `nn.Linear(784, 128)` | 784        | 128         | First hidden layer, reduces dimensionality       |
+| `nn.ReLU()`           | —         | —          | Adds non-linearity, removes negative activations |
+| `nn.Linear(128, 64)`  | 128        | 64          | Second hidden layer, further abstraction         |
+| `nn.ReLU()`           | —         | —          | Adds non-linearity again                         |
+| `nn.Linear(64, 10)`   | 64         | 10          | Output layer, one score per class                |
 
 #### What is ReLU?
 
 **ReLU (Rectified Linear Unit)** is defined as:
-$$\text{ReLU}(z) = \max(0, z)$$
+
+$$
+\text{ReLU}(z) = \max(0, z)
+$$
 
 - Outputs zero for any negative input
 - Passes positive inputs unchanged
@@ -285,15 +294,18 @@ optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
 #### Hyperparameters
 
-| Parameter | Value | Purpose |
-|---|---|---|
-| `epochs` | 100 | Number of full passes over the training data |
-| `learning_rate` | 0.1 | Step size for each weight update |
+| Parameter         | Value | Purpose                                      |
+| ----------------- | ----- | -------------------------------------------- |
+| `epochs`        | 100   | Number of full passes over the training data |
+| `learning_rate` | 0.1   | Step size for each weight update             |
 
 #### Loss Function: `CrossEntropyLoss`
 
 Used for **multi-class classification**. It computes:
-$$\mathcal{L} = -\sum_{c=1}^{C} y_c \log(\hat{p}_c)$$
+
+$$
+\mathcal{L} = -\sum_{c=1}^{C} y_c \log(\hat{p}_c)
+$$
 
 where $y_c$ is the true class indicator and $\hat{p}_c$ is the predicted probability for class $c$.
 
@@ -303,9 +315,13 @@ where $y_c$ is the true class indicator and $\hat{p}_c$ is the predicted probabi
 #### Optimizer: SGD (Stochastic Gradient Descent)
 
 Updates parameters using:
-$$\theta \leftarrow \theta - \eta \cdot \nabla_\theta \mathcal{L}$$
+
+$$
+\theta \leftarrow \theta - \eta \cdot \nabla_\theta \mathcal{L}
+$$
 
 SGD updates weights after each batch (mini-batch gradient descent), which:
+
 - Is faster than full-batch gradient descent
 - Introduces some noise that can help escape local minima
 
@@ -364,12 +380,12 @@ print(correct / total)
 
 #### Key Points
 
-| Code | Meaning |
-|---|---|
-| `model.eval()` | Switches model to evaluation mode — disables dropout and batch norm training behavior (not strictly needed here but good practice) |
-| `torch.no_grad()` | Disables gradient computation during inference — saves memory and speeds up the forward pass |
-| `torch.max(outputs, 1)` | Returns the index of the highest logit per row — this index is the predicted class |
-| `correct / total` | Final **accuracy** on the test set |
+| Code                      | Meaning                                                                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `model.eval()`          | Switches model to evaluation mode — disables dropout and batch norm training behavior (not strictly needed here but good practice) |
+| `torch.no_grad()`       | Disables gradient computation during inference — saves memory and speeds up the forward pass                                       |
+| `torch.max(outputs, 1)` | Returns the index of the highest logit per row — this index is the predicted class                                                 |
+| `correct / total`       | Final**accuracy** on the test set                                                                                             |
 
 The `_` (underscore) in `_, predicted = torch.max(outputs, 1)` discards the actual maximum value — only the predicted class index matters.
 
@@ -377,30 +393,30 @@ The `_` (underscore) in `_, predicted = torch.max(outputs, 1)` discards the actu
 
 ## Summary of the Full Pipeline
 
-| Stage | Tools Used |
-|---|---|
-| Data loading | `pandas.read_csv` |
-| Train/test split | `sklearn train_test_split` |
-| Normalization | Manual division by 255 |
-| Dataset wrapping | `torch.utils.data.Dataset` |
-| Batch loading | `torch.utils.data.DataLoader` |
+| Stage            | Tools Used                                                   |
+| ---------------- | ------------------------------------------------------------ |
+| Data loading     | `pandas.read_csv`                                          |
+| Train/test split | `sklearn train_test_split`                                 |
+| Normalization    | Manual division by 255                                       |
+| Dataset wrapping | `torch.utils.data.Dataset`                                 |
+| Batch loading    | `torch.utils.data.DataLoader`                              |
 | Model definition | `nn.Module`, `nn.Sequential`, `nn.Linear`, `nn.ReLU` |
-| Loss function | `nn.CrossEntropyLoss` |
-| Optimizer | `torch.optim.SGD` |
-| Backpropagation | `loss.backward()` + `optimizer.step()` |
-| Evaluation | `torch.no_grad()`, `torch.max()` |
+| Loss function    | `nn.CrossEntropyLoss`                                      |
+| Optimizer        | `torch.optim.SGD`                                          |
+| Backpropagation  | `loss.backward()` + `optimizer.step()`                   |
+| Evaluation       | `torch.no_grad()`, `torch.max()`                         |
 
 ---
 
 ## Key Concepts Recap
 
-| Concept | Explanation |
-|---|---|
-| **Forward Pass** | Data flows input → hidden layers → output, producing predictions |
-| **Loss** | A number measuring how wrong the predictions are |
-| **Backpropagation** | Calculates how much each weight contributed to the loss using the chain rule |
-| **Gradient Descent** | Moves each weight slightly in the direction that reduces loss |
-| **Epoch** | One full pass through the entire training dataset |
-| **Batch** | A small subset of the training data processed at one time |
-| **Logits** | Raw, unnormalized output scores before softmax |
-| **Accuracy** | Fraction of test samples the model predicted correctly |
+| Concept                    | Explanation                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------- |
+| **Forward Pass**     | Data flows input → hidden layers → output, producing predictions           |
+| **Loss**             | A number measuring how wrong the predictions are                             |
+| **Backpropagation**  | Calculates how much each weight contributed to the loss using the chain rule |
+| **Gradient Descent** | Moves each weight slightly in the direction that reduces loss                |
+| **Epoch**            | One full pass through the entire training dataset                            |
+| **Batch**            | A small subset of the training data processed at one time                    |
+| **Logits**           | Raw, unnormalized output scores before softmax                               |
+| **Accuracy**         | Fraction of test samples the model predicted correctly                       |
